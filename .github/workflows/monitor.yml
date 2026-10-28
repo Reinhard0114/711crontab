@@ -4,7 +4,13 @@ on:
   schedule:
     # 每 5 分鐘自動執行一次 (GitHub Actions 最小排程間隔)
     - cron: '*/5 * * * *'
-  workflow_dispatch: # 支援在 GitHub 介面手動點擊「Run workflow」觸發測試
+  workflow_dispatch:
+    inputs:
+      test_notify:
+        description: '發送測試推播至 Discord (確認 Secret 設定是否成功)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   check-stock:
@@ -31,7 +37,19 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          python3 monitor.py --once
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            echo "✅ 成功讀取到 DISCORD_WEBHOOK_URL Secret"
+          else
+            echo "⚠️ 未設定 DISCORD_WEBHOOK_URL Secret，通知將無法送達"
+          fi
+
+          if [ "${{ inputs.test_notify }}" = "true" ]; then
+            echo "📢 執行測試通知模式..."
+            python3 monitor.py --test-notify
+          else
+            echo "🔍 執行一般庫存檢查..."
+            python3 monitor.py --once
+          fi
 
       - name: Save Stock State Cache
         uses: actions/cache/save@v4
