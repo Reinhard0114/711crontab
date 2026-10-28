@@ -1,0 +1,9 @@
+{
+  "target_url": "https://myship.7-11.com.tw/general/detail/GM2610178124354",
+  "interval_seconds": 60,
+  "notify_mac": true,
+  "discord_webhook_url": "",
+  "telegram_bot_token": "",
+  "telegram_chat_id": "",
+  "watch_keywords": []
+}

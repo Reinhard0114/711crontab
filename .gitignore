@@ -1,0 +1,4 @@
+.DS_Store
+monitor.pid
+monitor.log
+config.local.json

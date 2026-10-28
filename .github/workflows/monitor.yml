@@ -1,0 +1,42 @@
+name: 7-11 Stock Monitor
+
+on:
+  schedule:
+    # 每 5 分鐘自動執行一次 (GitHub Actions 最小排程間隔)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # 支援在 GitHub 介面手動點擊「Run workflow」觸發測試
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 利用 Cache 儲存與還原最新庫存狀態
+      - name: Restore Stock State Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: stock_state.json
+          key: stock-state-${{ github.run_id }}
+          restore-keys: |
+            stock-state-
+
+      - name: Run Stock Check
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python3 monitor.py --once
+
+      - name: Save Stock State Cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: stock_state.json
+          key: stock-state-${{ github.run_id }}
+
