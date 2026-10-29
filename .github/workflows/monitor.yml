@@ -1,9 +1,9 @@
 name: 7-11 Stock Monitor
 
 on:
-  schedule:
-    # 每 5 分鐘自動執行一次 (GitHub Actions 最小排程間隔)
-    - cron: '*/5 * * * *'
+  # 排程已暫停 (若需重啟請取消註解)
+  # schedule:
+  #   - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       test_notify:
